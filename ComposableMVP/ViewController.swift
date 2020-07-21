@@ -10,14 +10,10 @@ class SupplementalView: UICollectionReusableView {
 
     static let reuse = "sreuse"
 
-    enum Kind {
-        static let top = "top"
-        static let bottom = "bottom"
-    }
-
-    enum Style {
-        case top
-        case bottom
+    enum Kind: String {
+        case second = "second"
+        case sweet16 = "sweet16"
+        case elite8 = "elite8"
     }
 
     let view = UIView()
@@ -26,7 +22,7 @@ class SupplementalView: UICollectionReusableView {
         super.init(frame: frame)
 
         backgroundColor = .systemPink
-        view.backgroundColor = .systemGray
+        view.backgroundColor = .clear
         view.translatesAutoresizingMaskIntoConstraints = false
         addSubview(view)
 
@@ -42,7 +38,17 @@ class SupplementalView: UICollectionReusableView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configureStyle(_ style: Style) {
+    func configureWithElementKind(_ kind: Kind?) {
+        guard let kind = kind else { return }
+
+        switch kind {
+        case .second:
+            backgroundColor = .red
+        case .sweet16:
+            backgroundColor = .blue
+        case .elite8:
+            backgroundColor = .green
+        }
     }
 }
 
@@ -62,8 +68,9 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        collectionView.register(SupplementalView.self, forSupplementaryViewOfKind: SupplementalView.Kind.top, withReuseIdentifier: SupplementalView.reuse)
-        collectionView.register(SupplementalView.self, forSupplementaryViewOfKind: SupplementalView.Kind.bottom, withReuseIdentifier: SupplementalView.reuse)
+        collectionView.register(SupplementalView.self, forSupplementaryViewOfKind: SupplementalView.Kind.second.rawValue, withReuseIdentifier: SupplementalView.reuse)
+        collectionView.register(SupplementalView.self, forSupplementaryViewOfKind: SupplementalView.Kind.sweet16.rawValue, withReuseIdentifier: SupplementalView.reuse)
+        collectionView.register(SupplementalView.self, forSupplementaryViewOfKind: SupplementalView.Kind.elite8.rawValue, withReuseIdentifier: SupplementalView.reuse)
 
         configureLayout()
         configureCollectionView()
@@ -96,7 +103,7 @@ extension ViewController {
 
         let group = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1)), subitems: groups)
         let suppleSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
-        let topSupplementalItem = NSCollectionLayoutSupplementaryItem(layoutSize: suppleSize, elementKind: SupplementalView.Kind.top, containerAnchor: NSCollectionLayoutAnchor(edges: .top), itemAnchor: NSCollectionLayoutAnchor(edges: .top))
+        let topSupplementalItem = NSCollectionLayoutSupplementaryItem(layoutSize: suppleSize, elementKind: SupplementalView.Kind.sweet16.rawValue, containerAnchor: NSCollectionLayoutAnchor(edges: .top), itemAnchor: NSCollectionLayoutAnchor(edges: .top))
         topSupplementalItem.zIndex = -1
         group.supplementaryItems = [topSupplementalItem]
 
@@ -123,8 +130,8 @@ extension ViewController {
             let thing = cv.dequeueReusableSupplementaryView(ofKind: str, withReuseIdentifier: SupplementalView.reuse, for: indexPath)
 
             if let thing = thing as? SupplementalView {
-                let style = str == SupplementalView.Kind.top ? SupplementalView.Style.top : SupplementalView.Style.bottom
-                thing.configureStyle(style)
+                let style = SupplementalView.Kind(rawValue: str)
+                thing.configureWithElementKind(style)
             }
 
             return thing
