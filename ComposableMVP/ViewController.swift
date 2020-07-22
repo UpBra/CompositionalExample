@@ -32,7 +32,6 @@ class LineView: UIView {
             vertical.topAnchor.constraint(equalTo: centerYAnchor),
             vertical.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
-
     }
 
     required init?(coder: NSCoder) {
@@ -59,7 +58,7 @@ class SupplementalView: UICollectionReusableView {
         }
     }
 
-    let stackView = UIStackView()
+    private let stackView = UIStackView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -67,7 +66,7 @@ class SupplementalView: UICollectionReusableView {
         backgroundColor = .systemPink
         stackView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(stackView)
-        
+
         stackView.axis = .vertical
         stackView.distribution = .fillEqually
 
@@ -77,6 +76,15 @@ class SupplementalView: UICollectionReusableView {
             stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
             stackView.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
+
+        for _ in 1...Kind.second.count {
+            let view = LineView()
+            view.backgroundColor = .systemPink
+            stackView.addArrangedSubview(view)
+        }
+
+        stride(from: 0, to: stackView.arrangedSubviews.count, by: 2).compactMap { stackView.arrangedSubviews[$0] }.forEach { $0.transform = CGAffineTransform.identity }
+        stride(from: 1, to: stackView.arrangedSubviews.count, by: 2).compactMap { stackView.arrangedSubviews[$0] }.forEach { $0.transform = CGAffineTransform(scaleX: 1, y: -1) }
     }
 
     required init?(coder: NSCoder) {
@@ -84,24 +92,11 @@ class SupplementalView: UICollectionReusableView {
     }
 
     func configureWithElementKind(_ kind: Kind?) {
-        guard let kind = kind else { return }
-
-        let previous = stackView.arrangedSubviews
-        previous.forEach { stackView.removeArrangedSubview($0) }
-
-        for _ in 0..<kind.count {
-            let view = LineView()
-            view.backgroundColor = .systemPink
-            stackView.addArrangedSubview(view)
-        }
+        guard let kind = kind else { stackView.arrangedSubviews.forEach { $0.isHidden = true }; return }
 
         let subviews = stackView.arrangedSubviews
-
-        let evens = stride(from: 0, to: subviews.count, by: 2).compactMap { subviews[$0] }
-        evens.forEach { $0.transform = CGAffineTransform.identity }
-
-        let odds = stride(from: 1, to: subviews.count, by: 2).compactMap { subviews[$0] }
-        odds.forEach { $0.transform = CGAffineTransform(scaleX: 1, y: -1) }
+        subviews.prefix(kind.count).forEach { $0.isHidden = false }
+        subviews.suffix(subviews.count - kind.count).forEach { $0.isHidden = true }
     }
 }
 
