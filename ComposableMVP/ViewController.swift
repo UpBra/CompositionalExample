@@ -98,10 +98,10 @@ class SupplementalView: UICollectionReusableView {
         let subviews = stackView.arrangedSubviews
 
         let evens = stride(from: 0, to: subviews.count, by: 2).compactMap { subviews[$0] }
-        evens.forEach { $0.layer.transform = CATransform3DIdentity }
+        evens.forEach { $0.transform = CGAffineTransform.identity }
 
         let odds = stride(from: 1, to: subviews.count, by: 2).compactMap { subviews[$0] }
-        odds.forEach { $0.layer.transform = CATransform3DMakeRotation(CGFloat(Double.pi),1.0,0.0,0.0) }
+        odds.forEach { $0.transform = CGAffineTransform(scaleX: 1, y: -1) }
     }
 }
 
