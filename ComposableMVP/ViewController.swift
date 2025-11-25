@@ -104,11 +104,11 @@ class SupplementalView: UICollectionReusableView {
 class ViewController: UIViewController {
 
     enum Section {
-        case main
+        case main, foo, bar
     }
 
     enum Constant {
-        static let test = SupplementalView.Kind.second
+        static let test = SupplementalView.Kind.elite8
     }
 
     @IBOutlet var collectionView: UICollectionView!
@@ -139,7 +139,7 @@ extension ViewController {
 
         for _ in 0..<cellCount {
             let firstGroup = NSCollectionLayoutGroup.custom(layoutSize: groupSize) { (env) -> [NSCollectionLayoutGroupCustomItem] in
-                let containerFrame = CGRect(origin: .zero, size: env.container.contentSize)
+                let containerFrame = CGRect(origin: .zero, size: env.container.effectiveContentSize)
                 var frame = CGRect(origin: .zero, size: CGSize(width: env.container.contentSize.width, height: 44))
                 frame.origin = CGPoint(x: containerFrame.midX - (frame.size.width / 2), y: containerFrame.midY - (frame.size.height / 2))
 
@@ -150,8 +150,8 @@ extension ViewController {
             groups.append(firstGroup)
         }
 
-        let group = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1)), subitems: groups)
-        let suppleSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
+        let group = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.7), heightDimension: .fractionalHeight(1)), subitems: groups)
+        let suppleSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.7), heightDimension: .fractionalHeight(1))
         let topSupplementalItem = NSCollectionLayoutSupplementaryItem(layoutSize: suppleSize, elementKind: Constant.test.rawValue, containerAnchor: NSCollectionLayoutAnchor(edges: .top), itemAnchor: NSCollectionLayoutAnchor(edges: .top))
         topSupplementalItem.zIndex = -1
         group.supplementaryItems = [topSupplementalItem]
@@ -159,7 +159,7 @@ extension ViewController {
         let section = NSCollectionLayoutSection(group: group)
         let layout = UICollectionViewCompositionalLayout(section: section)
 
-        collectionView.collectionViewLayout = layout
+        collectionView.collectionViewLayout = UICollectionViewCompositionalLayout.twoSections
     }
 
     func configureCollectionView() {
@@ -189,7 +189,7 @@ extension ViewController {
 
     func updateData(items: Array<Int>, withAnimation: Bool) {
         var snapshot = NSDiffableDataSourceSnapshot<Section, Int>()
-        snapshot.appendSections([.main])
+        snapshot.appendSections([.main, .foo, .bar])
         snapshot.appendItems(items)
         dataSource.apply(snapshot, animatingDifferences: withAnimation, completion: nil)
     }
